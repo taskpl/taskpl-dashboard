@@ -38,7 +38,8 @@
 export default {
   data() {
     return {
-      backUrl: "http://127.0.0.1:9410/api/v1",
+      // replace this link with your real backend
+      backUrl: "http://127.0.0.1:9647/api/v1",
       // urls
       backJobQueryUrl: "",
       backTaskAllQueryUrl: "",
