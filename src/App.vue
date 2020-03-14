@@ -58,9 +58,9 @@ export default {
           prop: "name"
         },
         {
-          key: "parent_stage_name",
-          label: "parent_stage_name",
-          prop: "parent_stage_name"
+          key: "parent_name",
+          label: "parent_name",
+          prop: "parent_name"
         },
         {
           key: "desc",
