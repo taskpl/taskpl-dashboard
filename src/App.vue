@@ -1,9 +1,18 @@
 <template>
   <div id="app">
     <div>
-      <el-dialog title="endpoint" :visible.sync="devMode" width="30%" :before-close="handleClose">
+      <!-- dev -->
+      <el-dialog title="endpoint" :visible.sync="devMode" width="30%">
         <el-input v-model="backUrl" placeholder="backend api url"></el-input>
         <el-input v-model="fileUrl" placeholder="file server url"></el-input>
+      </el-dialog>
+
+      <!-- new job -->
+      <el-dialog title="create a new job" :visible.sync="newJobMode" width="30%">
+        <el-input v-model="newJobName" placeholder="what's your job name?"></el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="createNewJob">OK</el-button>
+        </span>
       </el-dialog>
 
       <el-select
@@ -19,6 +28,7 @@
         <el-option v-for="item in jobList" :key="item.name" :label="item.name" :value="item.name"></el-option>
       </el-select>
 
+      <el-button v-if="taskName && !jobName" @click="switchNewJob">NewJob</el-button>
       <el-button v-if="jobName && taskName" @click="startQuery">Start</el-button>
       <!-- debug only -->
       <!-- <el-button @click="switchDev">Dev</el-button> -->
@@ -78,6 +88,10 @@ export default {
       jobList: [],
       taskName: "",
       jobName: "",
+      // new job
+      newJobName: "",
+      newJobMode: false,
+
       // table
       tableData: "",
       tableTitles: [
@@ -104,7 +118,7 @@ export default {
       ],
       tableProps: {
         "row-class-name": this.tableRowClassName,
-        "border": true,
+        border: true
       },
       // tree
       treeData: "",
@@ -118,6 +132,7 @@ export default {
     this.backUrl = this.backendUrlList[0];
     this.backJobQueryListUrl = this.backUrl + "/job/single/list";
     this.backJobQueryTreeUrl = this.backUrl + "/job/single/tree";
+    this.backJobNewUrl = this.backUrl + "/job/single";
     this.backTaskAllQueryUrl = this.backUrl + "/task/all";
     this.backJobAllQueryUrl = this.backUrl + "/job/all";
     this.fileUrl = this.fileUrlList[0];
@@ -127,6 +142,23 @@ export default {
   methods: {
     switchDev() {
       this.devMode = !this.devMode;
+    },
+
+    switchNewJob() {
+      this.newJobMode = !this.newJobMode;
+    },
+
+    createNewJob() {
+      this.newJobMode = false;
+      this.httpPost(
+        this.backJobNewUrl,
+        {
+          task_name: this.taskName,
+          job_name: this.newJobName
+        },
+        null,
+      );
+      this.clearOptions()
     },
 
     clearOptions() {
@@ -174,6 +206,34 @@ export default {
         return "success-row";
       }
       return "";
+    },
+
+    httpPost(url, params, writeTo) {
+      console.log(url);
+      console.log(params);
+      this.$http
+        .post(url, null, { params: params })
+        .then(response => {
+          let statusCode = response.status;
+          if (statusCode == 200) {
+            this[writeTo] = response.data;
+            console.log(response.data);
+          } else {
+            this.$notify({
+              title: "Ping failed!",
+              type: "error",
+              message: statusCode
+            });
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          this.$notify({
+            title: "Ping error!",
+            type: "error",
+            message: error
+          });
+        });
     },
 
     httpGet(url, params, writeTo) {
