@@ -37,7 +37,7 @@
       <el-button v-if="taskName && !jobName" @click="switchNewJob">NewJob</el-button>
       <el-button v-if="jobName && taskName" @click="startQuery">Start</el-button>
       <!-- debug only -->
-      <el-button @click="switchDev">DevMode</el-button>
+      <el-button v-if="!taskNameList" @click="switchDev">Endpoint Configure</el-button>
 
       <el-tabs type="border" v-if="tableData && treeData">
         <el-tab-pane label="table">
@@ -69,6 +69,9 @@
             </span>
           </el-tree>
         </el-tab-pane>
+
+        <el-tab-pane label="summary" :disabled="true">
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -79,7 +82,7 @@ export default {
   data() {
     return {
       // replace this link with your real backend
-      backendUrlList: ["http://127.0.0.1:9647/api/v1"],
+      backendUrlList: ["http://127.0.0.1:9410/api/v1"],
       fileUrlList: ["http://127.0.0.1:9645"],
       devMode: false,
 
@@ -90,8 +93,8 @@ export default {
       backJobAllQueryUrl: "",
 
       // value
-      taskNameList: [],
-      jobList: [],
+      taskNameList: null,
+      jobList: null,
       taskName: "",
       jobName: "",
       // new job
