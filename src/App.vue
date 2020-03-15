@@ -20,16 +20,25 @@
       </el-select>
 
       <el-button v-if="jobName && taskName" @click="startQuery">Start</el-button>
-      <data-tables v-if="tableData" :data="tableData" :table-props="tableProps">
-        <el-table-column
-          v-for="title in tableTitles"
-          :prop="title.prop"
-          :label="title.label"
-          :key="title.prop"
-          sortable="custom"
-          align="left"
-        ></el-table-column>
-      </data-tables>
+
+      <el-tabs type="border" v-if="tableData && treeData">
+        <el-tab-pane label="table">
+          <data-tables :data="tableData" :table-props="tableProps">
+            <el-table-column
+              v-for="title in tableTitles"
+              :prop="title.prop"
+              :label="title.label"
+              :key="title.prop"
+              sortable="custom"
+              align="left"
+            ></el-table-column>
+          </data-tables>
+        </el-tab-pane>
+
+        <el-tab-pane label="tree">
+          <el-tree :data="treeData" :props="treeProps"></el-tree>
+        </el-tab-pane>
+      </el-tabs>
     </div>
   </div>
 </template>
@@ -39,7 +48,7 @@ export default {
   data() {
     return {
       // replace this link with your real backend
-      backUrl: "http://127.0.0.1:9647/api/v1",
+      backUrl: "http://127.0.0.1:9410/api/v1",
       // urls
       backJobQueryUrl: "",
       backTaskAllQueryUrl: "",
@@ -50,6 +59,7 @@ export default {
       jobNameList: [],
       taskName: "",
       jobName: "",
+      // table
       tableData: "",
       tableTitles: [
         {
@@ -70,11 +80,18 @@ export default {
       ],
       tableProps: {
         "row-class-name": this.tableRowClassName
+      },
+      // tree
+      treeData: "",
+      treeProps: {
+        label: "name",
+        children: "sub_nodes"
       }
     };
   },
   mounted() {
-    this.backJobQueryUrl = this.backUrl + "/job/single";
+    this.backJobQueryListUrl = this.backUrl + "/job/single/list";
+    this.backJobQueryTreeUrl = this.backUrl + "/job/single/tree";
     this.backTaskAllQueryUrl = this.backUrl + "/task/all";
     this.backJobAllQueryUrl = this.backUrl + "/job/all";
 
@@ -82,20 +99,17 @@ export default {
   },
   methods: {
     updateTaskNameList() {
-      this.$http.get(this.backTaskAllQueryUrl).then(response => {
-        console.log("task list: " + response.data);
-        this.taskNameList = response.data;
-      });
+      this.httpGet(this.backTaskAllQueryUrl, {}, "taskNameList");
     },
 
     updateJobNameList(tn) {
-      console.log("calling update job name list");
-      let targetUrl = this.backJobAllQueryUrl + "?task_name=" + this.taskName;
-      console.log("update job: " + targetUrl);
-      this.$http.get(targetUrl).then(response => {
-        console.log("job list: " + response.data);
-        this.jobNameList = response.data;
-      });
+      this.httpGet(
+        this.backJobAllQueryUrl,
+        {
+          task_name: this.taskName
+        },
+        "jobNameList"
+      );
     },
 
     tableRowClassName({ row, rowIndex }) {
@@ -108,20 +122,16 @@ export default {
       return "";
     },
 
-    startQuery() {
-      console.log(this.backJobQueryUrl);
+    httpGet(url, params, writeTo) {
+      console.log(url);
+      console.log(params);
       this.$http
-        .get(this.backJobQueryUrl + "?task_name=yewu1&job_name=job1")
+        .get(url, { params: params })
         .then(response => {
           let statusCode = response.status;
           if (statusCode == 200) {
-            this.$notify({
-              title: "Ping works!",
-              type: "success",
-              message: statusCode
-            });
+            this[writeTo] = response.data;
             console.log(response.data);
-            this.tableData = response.data;
           } else {
             this.$notify({
               title: "Ping failed!",
@@ -138,6 +148,15 @@ export default {
             message: error
           });
         });
+    },
+
+    startQuery() {
+      let jobQueryParams = {
+        task_name: this.taskName,
+        job_name: this.jobName
+      };
+      this.httpGet(this.backJobQueryListUrl, jobQueryParams, "tableData");
+      this.httpGet(this.backJobQueryTreeUrl, jobQueryParams, "treeData");
     }
   }
 };
