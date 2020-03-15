@@ -5,6 +5,9 @@
       <el-dialog title="endpoint" :visible.sync="devMode" width="30%">
         <el-input v-model="backUrl" placeholder="backend api url"></el-input>
         <el-input v-model="fileUrl" placeholder="file server url"></el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="changeEndPoint">OK</el-button>
+        </span>
       </el-dialog>
 
       <!-- new job -->
@@ -31,7 +34,7 @@
       <el-button v-if="taskName && !jobName" @click="switchNewJob">NewJob</el-button>
       <el-button v-if="jobName && taskName" @click="startQuery">Start</el-button>
       <!-- debug only -->
-      <!-- <el-button @click="switchDev">Dev</el-button> -->
+      <el-button @click="switchDev">DevMode</el-button>
 
       <el-tabs type="border" v-if="tableData && treeData">
         <el-tab-pane label="table">
@@ -73,7 +76,7 @@ export default {
   data() {
     return {
       // replace this link with your real backend
-      backendUrlList: ["http://127.0.0.1:9410/api/v1"],
+      backendUrlList: ["http://127.0.0.1:9647/api/v1"],
       fileUrlList: ["http://127.0.0.1:9645"],
       devMode: false,
 
@@ -130,12 +133,8 @@ export default {
   },
   mounted() {
     this.backUrl = this.backendUrlList[0];
-    this.backJobQueryListUrl = this.backUrl + "/job/single/list";
-    this.backJobQueryTreeUrl = this.backUrl + "/job/single/tree";
-    this.backJobNewUrl = this.backUrl + "/job/single";
-    this.backTaskAllQueryUrl = this.backUrl + "/task/all";
-    this.backJobAllQueryUrl = this.backUrl + "/job/all";
     this.fileUrl = this.fileUrlList[0];
+    this.updateUrlList();
 
     this.updateTaskNameList();
   },
@@ -146,6 +145,21 @@ export default {
 
     switchNewJob() {
       this.newJobMode = !this.newJobMode;
+    },
+
+    changeEndPoint() {
+      this.devMode = false;
+      this.updateUrlList();
+      this.clearOptions();
+      this.updateTaskNameList();
+    },
+
+    updateUrlList() { 
+      this.backJobQueryListUrl = this.backUrl + "/job/single/list";
+      this.backJobQueryTreeUrl = this.backUrl + "/job/single/tree";
+      this.backJobNewUrl = this.backUrl + "/job/single";
+      this.backTaskAllQueryUrl = this.backUrl + "/task/all";
+      this.backJobAllQueryUrl = this.backUrl + "/job/all";
     },
 
     createNewJob() {
