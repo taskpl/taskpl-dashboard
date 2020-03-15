@@ -31,7 +31,15 @@
         </el-tab-pane>
 
         <el-tab-pane label="tree">
-          <el-tree :data="treeData" :props="treeProps"></el-tree>
+          <el-tree :data="treeData" :props="treeProps" default-expand-all>
+            <span class="custom-tree-node" slot-scope="{ node, data }">
+              <span>{{ node.label }}</span>
+              <span>
+                <el-tag v-if="data.result" type="success" size="mini">pass</el-tag>
+                <el-tag v-if="!data.result" type="warning" size="mini">todo</el-tag>
+              </span>
+            </span>
+          </el-tree>
         </el-tab-pane>
       </el-tabs>
     </div>
@@ -45,7 +53,8 @@ export default {
       // replace this link with your real backend
       backUrl: "http://127.0.0.1:9410/api/v1",
       // urls
-      backJobQueryUrl: "",
+      backJobQueryListUrl: "",
+      backJobQueryTreeUrl: "",
       backTaskAllQueryUrl: "",
       backJobAllQueryUrl: "",
 
@@ -107,8 +116,8 @@ export default {
 
     updateJobList(tn) {
       if (!tn) {
-        this.clearOptions()
-        return
+        this.clearOptions();
+        return;
       }
       this.httpGet(
         this.backJobAllQueryUrl,
