@@ -18,6 +18,9 @@
         </span>
       </el-dialog>
 
+      <!-- jump to another port -->
+      <el-dialog title="copy to your browser" :visible.sync="jumpOutMode" width="30%">{{ jumpOutUrl }}</el-dialog>
+
       <el-select
         v-model="taskName"
         placeholder="Task Type"
@@ -123,6 +126,8 @@ export default {
         "row-class-name": this.tableRowClassName,
         border: true
       },
+      jumpOutMode: false,
+      jumpOutUrl: "",
       // tree
       treeData: "",
       treeProps: {
@@ -154,7 +159,7 @@ export default {
       this.updateTaskNameList();
     },
 
-    updateUrlList() { 
+    updateUrlList() {
       this.backJobQueryListUrl = this.backUrl + "/job/single/list";
       this.backJobQueryTreeUrl = this.backUrl + "/job/single/tree";
       this.backJobNewUrl = this.backUrl + "/job/single";
@@ -170,9 +175,9 @@ export default {
           task_name: this.taskName,
           job_name: this.newJobName
         },
-        null,
+        null
       );
-      this.clearOptions()
+      this.clearOptions();
     },
 
     clearOptions() {
@@ -191,7 +196,10 @@ export default {
 
     jumpToUrl(url) {
       console.log("trying to jump: " + url);
-      window.location.href = url;
+      // todo: did not work
+      // window.location.href = url;
+      this.jumpOutMode = true;
+      this.jumpOutUrl = url;
     },
 
     updateTaskNameList() {
