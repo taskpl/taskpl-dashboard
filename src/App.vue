@@ -1,6 +1,11 @@
 <template>
   <div id="app">
     <div>
+      <el-dialog title="endpoint" :visible.sync="devMode" width="30%" :before-close="handleClose">
+        <el-input v-model="backUrl" placeholder="backend api url"></el-input>
+        <el-input v-model="fileUrl" placeholder="file server url"></el-input>
+      </el-dialog>
+
       <el-select
         v-model="taskName"
         placeholder="Task Type"
@@ -15,6 +20,8 @@
       </el-select>
 
       <el-button v-if="jobName && taskName" @click="startQuery">Start</el-button>
+      <!-- debug only -->
+      <!-- <el-button @click="switchDev">Dev</el-button> -->
 
       <el-tabs type="border" v-if="tableData && treeData">
         <el-tab-pane label="table">
@@ -27,6 +34,11 @@
               sortable="custom"
               align="left"
             ></el-table-column>
+            <el-table-column label="操作" align="left">
+              <template slot-scope="scope">
+                <el-button size="mini" @click="jumpToFileServer(scope.row.path_str)">跳转</el-button>
+              </template>
+            </el-table-column>
           </data-tables>
         </el-tab-pane>
 
@@ -51,7 +63,10 @@ export default {
   data() {
     return {
       // replace this link with your real backend
-      backUrl: "http://127.0.0.1:9410/api/v1",
+      backendUrlList: ["http://127.0.0.1:9410/api/v1"],
+      fileUrlList: ["http://127.0.0.1:9645"],
+      devMode: false,
+
       // urls
       backJobQueryListUrl: "",
       backJobQueryTreeUrl: "",
@@ -80,10 +95,16 @@ export default {
           key: "desc",
           label: "desc",
           prop: "desc"
+        },
+        {
+          key: "path_str",
+          label: "path_str",
+          prop: "path_str"
         }
       ],
       tableProps: {
-        "row-class-name": this.tableRowClassName
+        "row-class-name": this.tableRowClassName,
+        "border": true,
       },
       // tree
       treeData: "",
@@ -94,20 +115,37 @@ export default {
     };
   },
   mounted() {
+    this.backUrl = this.backendUrlList[0];
     this.backJobQueryListUrl = this.backUrl + "/job/single/list";
     this.backJobQueryTreeUrl = this.backUrl + "/job/single/tree";
     this.backTaskAllQueryUrl = this.backUrl + "/task/all";
     this.backJobAllQueryUrl = this.backUrl + "/job/all";
+    this.fileUrl = this.fileUrlList[0];
 
     this.updateTaskNameList();
   },
   methods: {
+    switchDev() {
+      this.devMode = !this.devMode;
+    },
+
     clearOptions() {
       this.jobList = [];
       this.taskName = "";
       this.jobName = "";
       this.tableData = "";
       this.treeData = "";
+    },
+
+    jumpToFileServer(urlPath) {
+      let fullUrl =
+        this.fileUrl + `/${this.taskName}/${this.jobName}/${urlPath}`;
+      this.jumpToUrl(fullUrl);
+    },
+
+    jumpToUrl(url) {
+      console.log("trying to jump: " + url);
+      window.location.href = url;
     },
 
     updateTaskNameList() {
