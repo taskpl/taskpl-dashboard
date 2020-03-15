@@ -4,19 +4,14 @@
       <el-select
         v-model="taskName"
         placeholder="Task Type"
-        @change="updateJobNameList"
+        @change="updateJobList"
         :clearable="true"
       >
         <el-option v-for="item in taskNameList" :key="item" :label="item" :value="item"></el-option>
       </el-select>
 
       <el-select v-if="taskName" v-model="jobName" placeholder="Job Name" :clearable="true">
-        <el-option
-          v-for="item in jobNameList"
-          :key="item.job_name"
-          :label="item.job_name"
-          :value="item.job_name"
-        ></el-option>
+        <el-option v-for="item in jobList" :key="item.name" :label="item.name" :value="item.name"></el-option>
       </el-select>
 
       <el-button v-if="jobName && taskName" @click="startQuery">Start</el-button>
@@ -56,7 +51,7 @@ export default {
 
       // value
       taskNameList: [],
-      jobNameList: [],
+      jobList: [],
       taskName: "",
       jobName: "",
       // table
@@ -98,17 +93,29 @@ export default {
     this.updateTaskNameList();
   },
   methods: {
+    clearOptions() {
+      this.jobList = [];
+      this.taskName = "";
+      this.jobName = "";
+      this.tableData = "";
+      this.treeData = "";
+    },
+
     updateTaskNameList() {
       this.httpGet(this.backTaskAllQueryUrl, {}, "taskNameList");
     },
 
-    updateJobNameList(tn) {
+    updateJobList(tn) {
+      if (!tn) {
+        this.clearOptions()
+        return
+      }
       this.httpGet(
         this.backJobAllQueryUrl,
         {
           task_name: this.taskName
         },
-        "jobNameList"
+        "jobList"
       );
     },
 
