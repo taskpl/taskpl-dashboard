@@ -79,8 +79,8 @@ export default {
   data() {
     return {
       // replace this link with your real backend
-      backendUrlList: ["http://127.0.0.1:9410/api/v1"],
-      fileUrlList: ["http://127.0.0.1:9645"],
+      backendUrlList: ["http://127.0.0.1:20317/api/v1"],
+      fileUrlList: ["http://127.0.0.1:20316/files"],
       devMode: false,
 
       // urls
