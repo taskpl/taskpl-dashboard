@@ -31,7 +31,7 @@
         <el-option v-for="item in jobList" :key="item.name" :label="item.name" :value="item.name"></el-option>
       </el-select>
 
-      <el-button v-if="taskName && !jobName" @click="switchNewJob">NewJob</el-button>
+      <el-button v-if="taskName && !jobName" @click="switchNewJob" type="primary">NewJob</el-button>
       <el-button v-if="jobName && taskName" @click="startQuery">Start</el-button>
       <!-- debug only -->
       <el-button v-if="!taskNameList" @click="switchDev">Endpoint Configure</el-button>
@@ -58,10 +58,11 @@
         <el-tab-pane label="tree">
           <el-tree :data="treeData" :props="treeProps" default-expand-all>
             <span class="custom-tree-node" slot-scope="{ node, data }">
-              <span>{{ node.label }}</span>
-              <span>
+              <span class="custom-tree-node-inside">{{ node.label }}</span>
+              <span class="custom-tree-node-inside">
                 <el-tag v-if="data.result" type="success" size="mini">pass</el-tag>
                 <el-tag v-if="!data.result" type="warning" size="mini">todo</el-tag>
+                <el-button size="mini" v-on:click="jumpToFileServer(data.path_str)">跳转</el-button>
               </span>
             </span>
           </el-tree>
