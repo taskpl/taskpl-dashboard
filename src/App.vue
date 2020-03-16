@@ -18,9 +18,6 @@
         </span>
       </el-dialog>
 
-      <!-- jump to another port -->
-      <el-dialog title="copy to your browser" :visible.sync="jumpOutMode" width="30%">{{ jumpOutUrl }}</el-dialog>
-
       <el-select
         v-model="taskName"
         placeholder="Task Type"
@@ -70,8 +67,7 @@
           </el-tree>
         </el-tab-pane>
 
-        <el-tab-pane label="summary" :disabled="true">
-        </el-tab-pane>
+        <el-tab-pane label="summary" :disabled="true"></el-tab-pane>
       </el-tabs>
     </div>
   </div>
@@ -129,8 +125,6 @@ export default {
         "row-class-name": this.tableRowClassName,
         border: true
       },
-      jumpOutMode: false,
-      jumpOutUrl: "",
       // tree
       treeData: "",
       treeProps: {
@@ -199,10 +193,8 @@ export default {
 
     jumpToUrl(url) {
       console.log("trying to jump: " + url);
-      // todo: did not work
-      // window.location.href = url;
-      this.jumpOutMode = true;
-      this.jumpOutUrl = url;
+      // should be port 80
+      window.open(url, "_blank");
     },
 
     updateTaskNameList() {
