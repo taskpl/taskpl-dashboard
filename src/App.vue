@@ -36,8 +36,8 @@
       <!-- debug only -->
       <el-button v-if="!taskNameList" @click="switchDev">Endpoint Configure</el-button>
 
-      <el-tabs type="border" v-if="tableData && treeData">
-        <el-tab-pane label="table">
+      <el-tabs type="border" v-if="tableData && treeData" v-model="currentTab">
+        <el-tab-pane label="table" name="table">
           <data-tables :data="tableData" :table-props="tableProps">
             <el-table-column
               v-for="title in tableTitles"
@@ -55,7 +55,7 @@
           </data-tables>
         </el-tab-pane>
 
-        <el-tab-pane label="tree">
+        <el-tab-pane label="tree" name="tree">
           <el-tree :data="treeData" :props="treeProps" default-expand-all>
             <span class="custom-tree-node" slot-scope="{ node, data }">
               <span class="custom-tree-node-inside">{{ node.label }}</span>
@@ -98,6 +98,8 @@ export default {
       newJobName: "",
       newJobMode: false,
 
+      // tab
+      currentTab: "tree",
       // table
       tableData: "",
       tableTitles: [
