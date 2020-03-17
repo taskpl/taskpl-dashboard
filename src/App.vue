@@ -59,6 +59,7 @@
           <el-tree :data="treeData" :props="treeProps" default-expand-all>
             <span class="custom-tree-node" slot-scope="{ node, data }">
               <span class="custom-tree-node-inside">{{ node.label }}</span>
+              <span v-if="data.desc">({{ data.desc }})</span>
               <span class="custom-tree-node-inside">
                 <el-tag v-if="data.result" type="success" size="mini">pass</el-tag>
                 <el-tag v-if="!data.result" type="warning" size="mini">todo</el-tag>
