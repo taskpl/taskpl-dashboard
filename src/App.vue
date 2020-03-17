@@ -236,6 +236,11 @@ export default {
           if (statusCode == 200) {
             this[writeTo] = response.data;
             console.log(response.data);
+            this.$notify({
+              title: "Post successful",
+              type: "success",
+              message: statusCode
+            });
           } else {
             this.$notify({
               title: "Ping failed!",
